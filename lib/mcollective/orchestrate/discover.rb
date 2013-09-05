@@ -37,8 +37,8 @@ module MCollective
           client.compound_filter(filter[:compound])
         end
 
+        filter[:fact] ||= Hash.new
         if filter[:environment]
-          filter[:fact] ||= Hash.new
           filter[:fact]['environment'] = filter[:environment]
         end
 
