@@ -2,6 +2,8 @@ require 'puppet/application'
 require 'puppet/run'
 
 class Puppet::Application::Orchestrate < Puppet::Application
+  run_mode :master
+
   option("--debug","-d")
   option("--verbose","-v")
   option("--ruby","-r")
@@ -83,15 +85,12 @@ HELP
 
   def puppet_main
     if command_line.args.length > 0
-      manifest = command_line.args.shift
+      klass = command_line.args.shift
+      Puppet[:environment] = command_line.args.shift || 'production'
 
-      manifest = "%s.mc" % manifest unless manifest =~ /\.mc$/
-
-      raise("Could not find orchestration script %s" % manifest) unless ::File.exist?(manifest)
-
-      Puppet[:manifest] = manifest
+      Puppet[:code] = "include #{klass}"
     else
-      raise "Please provide a script to run"
+      raise "Please provide a deployment class to run"
     end
 
     if command_line.args.length > 0
@@ -101,7 +100,6 @@ HELP
         end
       end
     end
-
 
     unless Puppet[:node_name_fact].empty?
       # Collect our facts.
@@ -122,6 +120,8 @@ HELP
     node.merge(facts.values) if facts
 
     begin
+      Puppet[:parser] = 'future'
+
       # Compile our catalog
       starttime = Time.now
       catalog = Puppet::Resource::Catalog.indirection.find(node.name, :use_node => node)
