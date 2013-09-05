@@ -29,7 +29,7 @@ module MCollective
         filter = Hash[@filter.map{|k, v| [k.to_sym, v]}]
 
         filter.keys.each do |key|
-          raise "#{key} is not a valid filter" unless [:compound, :identity, :class, :fact, :agent].include?(key)
+          raise "#{key} is not a valid filter" unless [:environment, :compound, :identity, :class, :fact, :agent].include?(key)
         end
 
         if filter[:compound]
@@ -37,10 +37,15 @@ module MCollective
           client.compound_filter(filter[:compound])
         end
 
+        if filter[:environment]
+          filter[:fact] ||= Hash.new
+          filter[:fact]['environment'] = filter[:environment]
+        end
+
         Array(filter[:identity]).each {|f| client.identity_filter f}
         Array(filter[:class]).each {|f| client.class_filter f}
-        Array(filter[:fact]).each {|f| client.fact_filter f}
         Array(filter[:agent]).each {|f| client.agent_filter f}
+        filter[:fact].each { |f,v| client.fact_filter f, v }
       end
 
       def discover
