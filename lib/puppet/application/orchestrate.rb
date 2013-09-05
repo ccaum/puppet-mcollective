@@ -87,19 +87,21 @@ HELP
     if command_line.args.length > 0
       klass = command_line.args.shift
       Puppet[:environment] = command_line.args.shift || 'production'
-
-      Puppet[:code] = "include #{klass}"
     else
       raise "Please provide a deployment class to run"
     end
 
+    class_parameters = Hash.new
     if command_line.args.length > 0
       while arg = command_line.args.shift
         if arg =~ /\A([a-z_\d]+)\s*=\s*(.+)\Z/
-          ENV["FACTER_#{$1}"] = $2
+          class_parameters[$1] = $2
         end
       end
     end
+
+    params_string = class_parameters.map { |k,v| "#{k} => '#{v}'" }.join(", ")
+    Puppet[:code] = "class { '#{klass}': #{params_string} }"
 
     unless Puppet[:node_name_fact].empty?
       # Collect our facts.
