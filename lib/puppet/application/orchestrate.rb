@@ -15,15 +15,15 @@ puppet-orchestrate(8) -- Orchestrates a series of MCollective RPC requests
 
 SYNOPSIS
 --------
-Parses a Puppet Orchestration script to the local MCollective infrastructure
+Parses a Puppet class provided as an argument to the command
 
 USAGE
 -----
-puppet orchestrate [-d|--debug] [-v|--verbose] [-r|--ruby] <file> <var=val> <var=val> ...
+puppet orchestrate [-d|--debug] [-v|--verbose] [-r|--ruby] <class> <var=val> <var=val> ...
 
 DESCRIPTION
 -----------
-A convenient way to run a Puppet Orchestration script and supply parameters to it
+A convenient way to run a Puppet orchestration class and supply parameters to it
 HELP
   end
 
