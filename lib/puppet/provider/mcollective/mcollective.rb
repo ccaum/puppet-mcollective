@@ -24,6 +24,8 @@ Puppet::Type.type(:mcollective).provide :mcollective do
 
       @arguments = request[:arguments]
 
+      @fail_on = request[:fail_on]
+
       # TODO
       # post_hook = lambda { .....}
     end

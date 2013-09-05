@@ -84,6 +84,19 @@ Puppet::Type.newtype(:mcollective) do
     end
   end
 
+  newparam(:fail_on) do
+    desc "Number (or precentage) of failed nodes to fail the entire job"
+
+    defaultto 1
+
+    validate do |val|
+      unless val != /[0-9]?/ or val != /[0-7]?%/
+        raise ArgumentError, "value must be a number or percentage." if not @resource.is_pos_float?(val)
+      end
+    end
+
+  end
+
   newparam(:name) do
     desc "A name for this job"
 

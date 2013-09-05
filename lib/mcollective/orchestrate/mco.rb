@@ -78,6 +78,13 @@ module MCollective
         @stdout.puts ">>>>>>>>> calling %s for %s node(s)" % [Util.colorize(:bold, to_s), @client.discover.size]
 
         try = 0
+        failures = 0
+        fail_on_number = if @fail_on =~ /.*%/
+                           fail_number = @fail_on[0...-1]
+                           @client.discover.size.to_f / fail_number.to_f * 100
+                         else
+                           @fail_on
+                         end
 
         (0...@tries).each do |try|
           results.clear
@@ -93,8 +100,9 @@ module MCollective
               @stdout.puts Util.colorize(:yellow, "   ...... try %d failed: %s: %s" % [try, e.class, e])
               sleep @try_sleep_time
             else
+              failures += 1
               @stdout.puts Util.colorize(:red, "   ...... failed after %d tries" % [try, e])
-              raise("Failed after %d tries: %s" % [try, e])
+              raise("Failed after %d tries: %s" % [try, e]) if failures == fail_on_number
             end
           end
         end
